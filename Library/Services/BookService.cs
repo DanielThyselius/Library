@@ -29,6 +29,10 @@ namespace Library.Services
             }
             
         }
+        public void Loan()
+        {
+
+        }
 
         internal IEnumerable<Book> All()
         {

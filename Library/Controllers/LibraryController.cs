@@ -32,6 +32,7 @@ namespace Library.Controllers
         {
 
             bookService.Add(vm.newBook);
+            AuthorService.Add(vm.newBook.Author);
             
             return View(vm);
         }
