@@ -57,7 +57,7 @@ namespace Library.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Library.Models.BookCopeis", b =>
+            modelBuilder.Entity("Library.Models.BookCopies", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace Library.Migrations
 
                     b.HasIndex("BookID");
 
-                    b.ToTable("BookCopeis");
+                    b.ToTable("BookCopies");
                 });
 
             modelBuilder.Entity("Library.Models.Book", b =>
@@ -79,10 +79,10 @@ namespace Library.Migrations
                         .HasForeignKey("AuthorID");
                 });
 
-            modelBuilder.Entity("Library.Models.BookCopeis", b =>
+            modelBuilder.Entity("Library.Models.BookCopies", b =>
                 {
                     b.HasOne("Library.Models.Book", "Book")
-                        .WithMany("BookCopeis")
+                        .WithMany("BookCopies")
                         .HasForeignKey("BookID");
                 });
 #pragma warning restore 612, 618

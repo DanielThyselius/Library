@@ -2,7 +2,7 @@
 
 namespace Library.Models
 {
-    public class BookCopeis
+    public class BookCopies
     {
         [Key]
         public int ID { get; set; }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Library.Services
 {
-    interface IServicce
+    public class AuthorService
     {
-        
+
     }
 }

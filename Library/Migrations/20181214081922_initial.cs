@@ -59,7 +59,7 @@ namespace Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BookCopeis",
+                name: "BookCopies",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -84,7 +84,7 @@ namespace Library.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookCopeis_BookID",
-                table: "BookCopeis",
+                table: "BookCopies",
                 column: "BookID");
 
             migrationBuilder.AddForeignKey(
@@ -106,7 +106,7 @@ namespace Library.Migrations
                 name: "Author");
 
             migrationBuilder.DropTable(
-                name: "BookCopeis");
+                name: "BookCopies");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_Books",
