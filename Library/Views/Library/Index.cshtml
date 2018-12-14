@@ -1,0 +1,33 @@
+﻿@model Library.Models.ViewModels.LibraryIndexVM
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+@if (Model.Books != null)
+{
+    @foreach (Book book in Model.Books)
+    {
+        <h2>@book.Description</h2>
+    }
+}
+
+        <form method="post">
+            <label asp-for="@Model.newBook.Name"></label>
+            <input asp-for="@Model.newBook.Name" value="" />
+
+            <label asp-for="@Model.newBook.Description"></label>
+            <input asp-for="@Model.newBook.Description" value="" />
+
+            <label asp-for="@Model.newBook.Description"></label>
+            <input asp-for="@Model.newBook.Description" value="" />
+
+            <label asp-for="@Model.newBook.Description"></label>
+            <input asp-for="@Model.newBook.Description" value="" />
+
+            <label asp-for="@Model.newBook.Description"></label>
+            <input asp-for="@Model.newBook.Description" value="" />
+
+            <button type="submit">rawr</button>
+        </form>
+

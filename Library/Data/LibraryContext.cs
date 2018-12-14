@@ -11,7 +11,11 @@ namespace Library.Data
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source = (LocalDB)\MSSQLLocalDB;Initial Catalog = Library; Integrated Security = True");
+            //optionsBuilder.UseSqlServer(@"Data Source = (LocalDB)\MSSQLLocalDB;Initial Catalog = Library; Integrated Security = True");
+        }
+        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
+        {
+
         }
         
 
