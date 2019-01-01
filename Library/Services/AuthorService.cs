@@ -19,5 +19,10 @@ namespace Library.Services
         {
             authorRepository.Add(author);
         }
+
+        internal IEnumerable<Author> All()
+        {
+            return authorRepository.All();
+        }
     }
 }

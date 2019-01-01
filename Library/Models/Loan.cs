@@ -10,10 +10,13 @@ namespace Library.Models
     {
         [Key]
         public int ID { get; set; }
+        [Required]
         public DateTime LoanTime { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
-        public virtual BookCopies BookCopies { get; set; }
-        public virtual Member member { get; set; }
+        [Required]
+        public virtual BookCopy BookCopy { get; set; }
+        [Required]
+        public virtual Member Member { get; set; }
     }
 }

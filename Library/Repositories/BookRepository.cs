@@ -1,5 +1,6 @@
 ﻿using Library.Data;
 using Library.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Library.Repositories
 {
     public class BookRepository : IRepository<Book, int>
     {
-        LibraryContext _context;
+        private readonly LibraryContext _context;
         public BookRepository(LibraryContext libraryContext)
         {
             _context = libraryContext;
@@ -25,19 +26,26 @@ namespace Library.Repositories
             return _context.Books;
         }
 
-        public void Edit(Book item)
+        public void Edit(Book book)
         {
-            throw new NotImplementedException();
+                    _context.Update(book);
+                    _context.SaveChanges();
         }
 
         public Book Find(int id)
         {
-            throw new NotImplementedException();
+            return _context.Books.FirstOrDefault(x => x.ID == id);
         }
 
-        public void Remove(Book item)
+        public void Remove(Book book)
         {
-            throw new NotImplementedException();
+            _context.Books.Remove(book);
+            _context.SaveChanges();
+        }
+
+        public bool BookExists(int id)
+        {
+            return _context.Books.Any(e => e.ID == id);
         }
     }
 }

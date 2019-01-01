@@ -24,10 +24,12 @@ namespace Library.Services
             }
             catch (Exception)
             {
-
                 //UI
             }
-            
+        }
+        public Book Get(int id)
+        {
+            return bookRepository.Find(id);
         }
         public void Loan()
         {
@@ -37,6 +39,22 @@ namespace Library.Services
         internal IEnumerable<Book> All()
         {
             return bookRepository.All();
+        }
+
+        internal void Edit(Book book)
+        {
+            bookRepository.Edit(book);
+        }
+
+        public bool BookExists(int id)
+        {
+            return bookRepository.BookExists(id);
+        }
+
+        internal void Delete(int id)
+        {
+            var book = Get(id);
+            bookRepository.Remove(book);
         }
     }
 }

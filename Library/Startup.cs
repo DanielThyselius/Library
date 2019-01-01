@@ -39,6 +39,7 @@ namespace Library
             services.AddScoped<BookService>();
             services.AddScoped<AuthorService>();
             services.AddScoped<BookRepository>();
+            services.AddScoped<AuthorRepository>();
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -65,7 +66,7 @@ namespace Library
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Library}/{action=Index}/{id?}");
             });
         }
     }

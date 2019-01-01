@@ -11,12 +11,14 @@ namespace Library.Models
         [Key]
         public int ID { get; set; }
         public string ISBN { get; set; }
-        public string Name { get; set; }
+        [Display(Name = "Titel")]
         public string  Title { get; set; }
-        public virtual Author Author { get; set; }
+        [Display(Name = "Författare")]
+        [Required]
+        public virtual Author Author { get; set; } = new Author();
+        [Display(Name="Beskrivning")]
         public string Description { get; set; }
-        public ICollection<BookCopies> BookCopeis { get; set; }
-
-
+        [Display(Name ="Kopior")]
+        public virtual ICollection<BookCopy> BookCopeis { get; set; }
     }
 }

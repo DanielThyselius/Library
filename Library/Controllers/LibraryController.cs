@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Library.Data;
 using Library.Models.ViewModels;
 using Library.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Library.Controllers
 {
     public class LibraryController : Controller
     {
-        private readonly AuthorService AuthorService;
-        private readonly BookService bookService;
+        private readonly LibraryContext _context;
 
-        public LibraryController(AuthorService authorService,BookService bookService)
+        public LibraryController(LibraryContext context)
         {
-            AuthorService = authorService;
-            this.bookService = bookService;
+            _context = context;
         }
 
         
@@ -24,17 +24,36 @@ namespace Library.Controllers
         public IActionResult Index()
         {
             var vm = new LibraryIndexVM();
-            vm.Books = bookService.All();
+            vm.Books = _context.Books;
+            vm.Authors = _context.Authors.ToList().OrderBy(x => x.FirstName).Select(x =>
+                new SelectListItem
+                {
+                    Text = $"{x.FirstName}  {x.LastName}",
+                    Value = x.ID.ToString()
+                });
             return View(vm);
         }
         [HttpPost]
         public IActionResult Index(LibraryIndexVM vm)
         {
-
-            bookService.Add(vm.newBook);
-            AuthorService.Add(vm.newBook.Author);
-            
+            _context.Add(vm.newBook);
+           // AuthorService.Add(vm.newAuthor);
             return View(vm);
         }
+
+        public IActionResult BookInfo()
+        {
+            return View();
+        }
+
+
+        public IActionResult AddAuthor(LibraryIndexVM vm)
+        {
+            
+            _context.Add(vm.newAuthor);
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

@@ -4,14 +4,16 @@ using Library.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Library.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20181230123322_LoansAuthorsMembersAndBookCopies")]
+    partial class LoansAuthorsMembersAndBookCopies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +42,7 @@ namespace Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AuthorID");
+                    b.Property<int?>("AuthorID");
 
                     b.Property<string>("Description");
 
@@ -76,13 +78,13 @@ namespace Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("BookCopyID");
+                    b.Property<int?>("BookCopyID");
 
                     b.Property<DateTime>("DueDate");
 
                     b.Property<DateTime>("LoanTime");
 
-                    b.Property<int>("MemberSSN");
+                    b.Property<int?>("MemberSSN");
 
                     b.Property<DateTime?>("ReturnDate");
 
@@ -114,8 +116,7 @@ namespace Library.Migrations
                 {
                     b.HasOne("Library.Models.Author", "Author")
                         .WithMany("AuthorBooks")
-                        .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("AuthorID");
                 });
 
             modelBuilder.Entity("Library.Models.BookCopy", b =>
@@ -129,13 +130,11 @@ namespace Library.Migrations
                 {
                     b.HasOne("Library.Models.BookCopy", "BookCopy")
                         .WithMany()
-                        .HasForeignKey("BookCopyID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("BookCopyID");
 
                     b.HasOne("Library.Models.Member", "Member")
                         .WithMany()
-                        .HasForeignKey("MemberSSN")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("MemberSSN");
                 });
 #pragma warning restore 612, 618
         }

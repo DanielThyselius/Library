@@ -4,14 +4,16 @@ using Library.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Library.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20181214144712_bookfix")]
+    partial class bookfix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +42,7 @@ namespace Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AuthorID");
+                    b.Property<int?>("AuthorID");
 
                     b.Property<string>("Description");
 
@@ -55,7 +57,7 @@ namespace Library.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Library.Models.BookCopy", b =>
+            modelBuilder.Entity("Library.Models.BookCopies", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -70,72 +72,18 @@ namespace Library.Migrations
                     b.ToTable("BookCopies");
                 });
 
-            modelBuilder.Entity("Library.Models.Loan", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("BookCopyID");
-
-                    b.Property<DateTime>("DueDate");
-
-                    b.Property<DateTime>("LoanTime");
-
-                    b.Property<int>("MemberSSN");
-
-                    b.Property<DateTime?>("ReturnDate");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("BookCopyID");
-
-                    b.HasIndex("MemberSSN");
-
-                    b.ToTable("Loans");
-                });
-
-            modelBuilder.Entity("Library.Models.Member", b =>
-                {
-                    b.Property<int>("SSN")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
-
-                    b.HasKey("SSN");
-
-                    b.ToTable("Members");
-                });
-
             modelBuilder.Entity("Library.Models.Book", b =>
                 {
                     b.HasOne("Library.Models.Author", "Author")
                         .WithMany("AuthorBooks")
-                        .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("AuthorID");
                 });
 
-            modelBuilder.Entity("Library.Models.BookCopy", b =>
+            modelBuilder.Entity("Library.Models.BookCopies", b =>
                 {
                     b.HasOne("Library.Models.Book", "Book")
                         .WithMany("BookCopeis")
                         .HasForeignKey("BookID");
-                });
-
-            modelBuilder.Entity("Library.Models.Loan", b =>
-                {
-                    b.HasOne("Library.Models.BookCopy", "BookCopy")
-                        .WithMany()
-                        .HasForeignKey("BookCopyID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Library.Models.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberSSN")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

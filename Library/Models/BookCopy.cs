@@ -2,10 +2,10 @@
 
 namespace Library.Models
 {
-    public class BookCopies
+    public class BookCopy
     {
         [Key]
         public int ID { get; set; }
-        public Book Book { get; set; }
+        public virtual Book Book { get; set; }
     }
 }

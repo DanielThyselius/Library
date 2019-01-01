@@ -6,28 +6,64 @@
 <h2>Index</h2>
 @if (Model.Books != null)
 {
-    @foreach (Book book in Model.Books)
-    {
-        <h2>@book.Description</h2>
-    }
+        <h2>Lista av böcker</h2>
+        <table class="table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th><label asp-for="@Model.newBook.Title"></label></th>
+                    <th><label asp-for="@Model.newBook.Author"></label></th>
+                    <th><label asp-for="@Model.newBook.Description"></label></th>
+                    <th><label asp-for="@Model.newBook.ISBN"></label></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Book book in Model.Books)
+                {
+                    <tr>
+                        <td> <a id="button-@book.ID" asp-controller="Books" asp-action="Details" asp-route-id="@book.ID">>-🛈-<</a></td>
+                        <td>@book.Title</td>
+                        <td>@book.Author</td>
+                        <td>@book.Description</td>
+                        <td>@book.ISBN</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 }
+<br />
 
-        <form method="post">
-            <label asp-for="@Model.newBook.Name"></label>
-            <input asp-for="@Model.newBook.Name" value="" />
+<form method="post" class="">
+    <h2>Lägg till ny bok</h2>
+    <div class="form-group">
+        <label asp-for="@Model.newBook.Title"></label>
+        <input asp-for="@Model.newBook.Title" value="" />
+    </div>
+    <label asp-for="@Model.newBook.Author"></label>
+    <select asp-for="@Model.newBook.Author.ID" asp-items="@Model.Authors"></select>
 
-            <label asp-for="@Model.newBook.Description"></label>
-            <input asp-for="@Model.newBook.Description" value="" />
+    <div class="form-group">
+        <label asp-for="@Model.newBook.Description"></label>
+        <input asp-for="@Model.newBook.Description" value="" />
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.newBook.ISBN"></label>
+        <input asp-for="@Model.newBook.ISBN" value="" />
+    </div>
+    <button type="submit">rawr</button>
+</form>
 
-            <label asp-for="@Model.newBook.Description"></label>
-            <input asp-for="@Model.newBook.Description" value="" />
 
-            <label asp-for="@Model.newBook.Description"></label>
-            <input asp-for="@Model.newBook.Description" value="" />
+<form method="post" asp-controller="Library" asp-action="AddAuthor">
+    <h2>Lägg till ny författare</h2>
 
-            <label asp-for="@Model.newBook.Description"></label>
-            <input asp-for="@Model.newBook.Description" value="" />
-
-            <button type="submit">rawr</button>
-        </form>
-
+    <div class="form-group">
+        <label asp-for="@Model.newAuthor.FirstName"></label>
+        <input asp-for="@Model.newAuthor.FirstName" value="" />
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.newAuthor.LastName"></label>
+        <input asp-for="@Model.newAuthor.LastName" value="" />
+    </div>
+    <button type="submit">Knapp</button>
+</form>

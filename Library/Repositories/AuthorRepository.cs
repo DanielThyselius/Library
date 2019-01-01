@@ -22,7 +22,7 @@ namespace Library.Repositories
 
         public IEnumerable<Author> All()
         {
-            return _context.Authors.ToList();
+            return _context.Authors;
         }
 
         public void Edit(Author item)
