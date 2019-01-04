@@ -1,60 +1,134 @@
-﻿using Library.Models;
-using Library.Repositories;
-using System;
+﻿using Library.Data;
+using Library.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Library.Services
 {
-    public class BookService 
+    public class BookService : IBookService
     {
-        private readonly BookRepository bookRepository;
+        private readonly LibraryContext _context;
 
-        public BookService(BookRepository bookRepository)
+        public BookService(LibraryContext context)
         {
-            this.bookRepository = bookRepository;
+            this._context = context;
         }
 
+        /// <summary>
+        /// Hämtar alla böcker
+        /// </summary>
+        /// <returns>en lista av alla böcker</returns>
+        public IList<Book> GetAll()
+        {
+            return _context.Books
+                .Include("Author")
+                .Include(x => x.BookCopeis)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Hämtar alla böcker som är tillgängliga
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Book> GetAvailable()
+        {
+            return _context.Books
+                .Include("Author")
+                .Include(x => x.BookCopeis)
+                .ToList()
+                .Where(x => IsAvailable(x));
+        }
+
+        /// <summary>
+        /// Hämtar alla böcker från angiven författare
+        /// </summary>
+        /// <param name="author">Författare vars böcker ska hämtas</param>
+        /// <returns></returns>
+        public IEnumerable<Book> GetAllByAuthor(Author author)
+        {
+            return
+                _context.Books
+                .Where(x => x.Author == author)
+                .Include("Author")
+                .Include(x => x.BookCopeis)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Hämtar en bok utifrån dess ID
+        /// </summary>
+        /// <param name="id">ID på boken som ska hämtas</param>
+        /// <returns></returns>
+        public Book Get(int? id)
+        {
+            return _context.Books.FirstOrDefault(m => m.ID == id);
+        }
+
+        /// <summary>
+        /// Lägger till en bok
+        /// </summary>
+        /// <param name="book">Boken som ska läggas till</param>
         public void Add(Book book)
         {
-            try
+            book.Author = _context.Authors.Find(book.Author.ID);
+            _context.Add(book);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Uppdaterar en bok
+        /// </summary>
+        /// <param name="book">Boken som ska uppdateras</param>
+        public void Update(Book book)
+        {
+            _context.Update(book);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Tar bort alla exemplar av boken sen tas även bokenbort givet dess ID
+        /// </summary>
+        /// <param name="id">ID på boken som ska tas bort</param>
+        public void Delete(int id)
+        {
+            var book = _context.Books.Find(id);
+            var bookCopies = _context.BookCopies
+                .Where(x => x.Book == book);
+            _context.BookCopies.RemoveRange(bookCopies);
+            _context.Books.Remove(book);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Kollar om boken i fråga är tillgänlig eller ej
+        /// </summary>
+        /// <param name="book">boken i fråga</param>
+        /// <returns>true om boken finns tillgänglig</returns>
+        public bool IsAvailable(Book book)
+        {
+            if (book.BookCopeis == null)
             {
-                bookRepository.Add(book);
+                return false;
             }
-            catch (Exception)
+            foreach (BookCopy copy in book.BookCopeis)
             {
-                //UI
+                if (!_context.Loans.Where(x => x.BookCopy == copy && x.ReturnDate == null).Any())
+                {
+                    return true;
+                }
             }
-        }
-        public Book Get(int id)
-        {
-            return bookRepository.Find(id);
-        }
-        public void Loan()
-        {
-
+            return false;
         }
 
-        internal IEnumerable<Book> All()
-        {
-            return bookRepository.All();
-        }
-
-        internal void Edit(Book book)
-        {
-            bookRepository.Edit(book);
-        }
-
+        /// <summary>
+        /// Kollar om boken finns eller ej
+        /// </summary>
+        /// <param name="id">bokens ID</param>
+        /// <returns>true om boken finns</returns>
         public bool BookExists(int id)
         {
-            return bookRepository.BookExists(id);
-        }
-
-        internal void Delete(int id)
-        {
-            var book = Get(id);
-            bookRepository.Remove(book);
+            return _context.Books.Any(e => e.ID == id);
         }
     }
 }

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Library.Data;
-using Library.Repositories;
+﻿using Library.Data;
 using Library.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 
 namespace Library
 {
@@ -35,11 +29,10 @@ namespace Library
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<LibraryContext>(options => options.UseSqlServer(@"Data Source = (LocalDB)\MSSQLLocalDB;Initial Catalog = Library; Integrated Security = True"));
-            services.AddScoped<BookService>();
-            services.AddScoped<AuthorService>();
-            services.AddScoped<BookRepository>();
-            services.AddScoped<AuthorRepository>();
+            services.AddDbContext<LibraryContext>
+                (options => options.UseSqlServer(@"Data Source = (LocalDB)\MSSQLLocalDB;Initial Catalog = Library; Integrated Security = True"));
+            services.AddScoped<IBookService,BookService>();
+            services.AddScoped<IAuthorService, AuthorService>();
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

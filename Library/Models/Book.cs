@@ -15,10 +15,11 @@ namespace Library.Models
         public string  Title { get; set; }
         [Display(Name = "Författare")]
         [Required]
-        public virtual Author Author { get; set; } = new Author();
+        public int AuthorID { get; set; }
+        public Author Author { get; set; }
         [Display(Name="Beskrivning")]
         public string Description { get; set; }
         [Display(Name ="Kopior")]
-        public virtual ICollection<BookCopy> BookCopeis { get; set; }
+        public ICollection<BookCopy> BookCopeis { get; set; }
     }
 }

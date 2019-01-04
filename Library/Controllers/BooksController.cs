@@ -14,71 +14,58 @@ namespace Library.Controllers
 {
     public class BooksController : Controller
     {
-        private readonly LibraryContext _context;
+        private readonly IBookService _bookService;
+        private readonly IAuthorService _authorService;
 
-        public BooksController(LibraryContext context)
+        public BooksController(IBookService bookService, IAuthorService authorService)
         {
-            _context = context;
+            this._bookService = bookService;
+            this._authorService = authorService;
         }
 
-        // GET: Books
+        /// <summary>
+        /// Visa en dashboard för böcker
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             var vm = new BookIndexVM();
-            vm.Books = _context.Books
-                .Include("Author")
-                .Include(x => x.BookCopeis)
-                .ToList();
+            vm.Books = _bookService.GetAll();
 
-            vm.Authors = _context.Authors.ToList().OrderBy(x => x.FirstName).Select(x =>
-               new SelectListItem
-               {
-                   Text = $"{x.FirstName}  {x.LastName}",
-                   Value = x.ID.ToString()
-               });
+            vm.Authors = _authorService.GetSelectListItems();
 
             return View(vm);
         }
-
-
-        // GET: Availible Books
+        
+        /// <summary>
+        /// Filtrerar bort böcker som inte är tillgängliga och visar Index
+        /// </summary>
+        /// <returns>Books/Index</returns>
         public IActionResult Available()
         {
             var vm = new BookIndexVM();
-            vm.Books = _context.Books
-                .Include("Author")
-                .Include(x => x.BookCopeis)
-                .ToList()
-                .Where(x => IsAvailable(x));
-            vm.Authors = _context.Authors.ToList().OrderBy(x => x.FirstName).Select(x =>
-              new SelectListItem
-              {
-                  Text = $"{x.FirstName}  {x.LastName}",
-                  Value = x.ID.ToString()
-              });
+            vm.Books = _bookService.GetAvailable();
+            vm.Authors = _authorService.GetSelectListItems();
             return View("Index", vm);
         }
 
-        // POST: Filter on Author
+        /// <summary>
+        /// Filtrerar böckerna på vald författare och returnerar Index
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns>Books/Index</returns>
         public IActionResult FilterOnAuthor(BookIndexVM vm)
         {
-            vm.Books = _context.Books
-                .Where(x => x.Author == vm.Author)
-                .Include("Author")
-                .Include(x => x.BookCopeis)
-                .ToList();
-            vm.Authors = _context.Authors.ToList().OrderBy(x => x.FirstName).Select(x =>
-              new SelectListItem
-              {
-                  Text = $"{x.FirstName}  {x.LastName}",
-                  Value = x.ID.ToString()
-              });
+            vm.Books = _bookService.GetAllByAuthor(vm.Author);
+            vm.Authors = _authorService.GetSelectListItems();
             return View("Index", vm);
         }
-
-
-
-        // GET: Books/Details/5
+        
+        /// <summary>
+        /// Visar detaljer om vald bok
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -86,8 +73,8 @@ namespace Library.Controllers
                 return NotFound();
             }
 
-            var book = _context.Books
-                .FirstOrDefault(m => m.ID == id);
+            var book = _bookService.Get(id);
+                
             if (book == null)
             {
                 return NotFound();
@@ -96,40 +83,42 @@ namespace Library.Controllers
             return View(book);
         }
 
-        // GET: Books/Create
+        /// <summary>
+        /// Visar en sida för att skapa en bok
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Create()
         {
-            ViewBag.Authors = _context.Authors.ToList().OrderBy(x => x.FirstName).Select(x =>
-                new SelectListItem
-                {
-                    Text = $"{x.FirstName}  {x.LastName}",
-                    Value = x.ID.ToString(),
-                });
+            ViewBag.Authors = _authorService.GetSelectListItems();
             return View();
         }
 
-        // POST: Books/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Skapar en ny bok
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("ID,ISBN,Title,Description,Author")] Book book)
+        public IActionResult Create(Book book)
         {
             if (ModelState.IsValid)
             {
-                book.Author = _context.Authors.Find(book.Author.ID);
-                _context.Add(book);
-                _context.SaveChanges();
+                _bookService.Add(book);
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
         }
 
-        // GET: Books/Edit/5
+        /// <summary>
+        /// Visar en sida för att ändra på en bok
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IActionResult Edit(int id)
         {
 
-            var book = _context.Books.Find(id);
+            var book = _bookService.Get(id);
             if (book == null)
             {
                 return NotFound();
@@ -137,23 +126,27 @@ namespace Library.Controllers
             return View(book);
         }
 
-        // POST: Books/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Ändrar på en bok
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="book"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("ID,ISBN,Title,Description")] Book book)
+        public IActionResult Edit(int id, Book book)
         {
             if (ModelState.IsValid)
             {
+               
                 try
                 {
-                    _context.Update(book);
+                    _bookService.Update(book);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (BookExists(book.ID))
+                    if (_bookService.BookExists(book.ID))
                     {
                         return NotFound();
                     }
@@ -166,7 +159,11 @@ namespace Library.Controllers
             return View(book);
         }
 
-        // GET: Books/Delete/5
+        /// <summary>
+        /// Visar en sida för att ta bort en bok
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -174,8 +171,7 @@ namespace Library.Controllers
                 return NotFound();
             }
 
-            var book = _context.Books
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var book = _bookService.Get(id);
             if (book == null)
             {
                 return NotFound();
@@ -183,37 +179,18 @@ namespace Library.Controllers
 
             return View(book);
         }
-        // POST: Books/Delete/5
+
+        /// <summary>
+        /// Tar bort en bok
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var book = _context.Books.Find(id);
-            _context.Books.Remove(book);
-            _context.SaveChangesAsync();
+            _bookService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
-
-        private bool BookExists(int id)
-        {
-            return _context.Books.Any(e => e.ID == id);
-        }
-
-        private bool IsAvailable(Book book)
-        {
-            if (book.BookCopeis == null)
-            {
-                return false;
-            }
-            foreach (BookCopy copy in book.BookCopeis)
-            {
-                if (!_context.Loans.Where(x => x.BookCopy == copy && x.ReturnDate == null).Any())
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
     }
 }

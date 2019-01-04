@@ -1,5 +1,6 @@
-﻿using Library.Models;
-using Library.Repositories;
+﻿using Library.Data;
+using Library.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,22 +8,26 @@ using System.Threading.Tasks;
 
 namespace Library.Services
 {
-    public class AuthorService
+    public class AuthorService : IAuthorService
     {
-        private readonly AuthorRepository authorRepository;
+        private readonly LibraryContext _context;
 
-        public AuthorService(AuthorRepository authorRepository )
+        public AuthorService(LibraryContext libraryContext )
         {
-            this.authorRepository = authorRepository;
+            this._context = libraryContext;
         }
-        public void Add(Author author)
+        /// <summary>
+        /// Hämtar en SelectList av alla författare
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<SelectListItem> GetSelectListItems()
         {
-            authorRepository.Add(author);
-        }
-
-        internal IEnumerable<Author> All()
-        {
-            return authorRepository.All();
+            return _context.Authors.ToList().OrderBy(x => x.FirstName).Select(x =>
+               new SelectListItem
+               {
+                   Text = $"{x.FirstName}  {x.LastName}",
+                   Value = x.ID.ToString()
+               });
         }
     }
 }
